@@ -17,7 +17,7 @@ connection.connect(function(err) {
 //--------------------------------------
 // Display products
 
-function displayProducts(callback){
+function displayProducts(){
     connection.query("SELECT * FROM products", function(err,res){
         if (err) throw err;
         console.log(res.item_id);
@@ -25,8 +25,12 @@ function displayProducts(callback){
             console.log("Id: " + res[i].item_id +  " | " + "Product: " + res[i].product_name + "   |   " + "Price: $" + res[i].price);
             console.log("-----------------------------------------------------------------------------");
         }
+        placeOrder();
     })
 }
+
+//--------------------------------
+//Place an Order
 
 function placeOrder(){
 inquirer.prompt([{
@@ -42,7 +46,30 @@ inquirer.prompt([{
     console.log(answers);
 })};
 
+//-------------------------------------
+// ifs
 
-displayProducts(placeOrder());
+function checkCustomerOrder(customerChoice){
+    if(answers.customerChoice <= res.length){
+        console.log("it worked");
+    }
+
+    else //if (answers.customerChoice > res.length) 
+    {
+        console.log("We do not have this product in stock");
+    }
+}
+
+
+
+
+
+
+
+
+
+displayProducts();
+checkCustomerOrder();
 
 connection.end();
+
