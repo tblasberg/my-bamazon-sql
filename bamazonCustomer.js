@@ -25,7 +25,7 @@ function displayProducts(){
             console.log("Id: " + res[i].item_id +  " | " + "Product: " + res[i].product_name + "   |   " + "Price: $" + res[i].price);
             console.log("-----------------------------------------------------------------------------");
         }
-    placeOrder();
+    placeOrder(res);
 })
 }
 
@@ -58,10 +58,10 @@ connection.query('SELECT * FROM products', function(error, results, fields){
 //--------------------------------
 //Place an Order
 
-function placeOrder(){
+function placeOrder(dbItems){
 
         inquirer.prompt([{
-            type: "checkbox",
+            type: "list",
             name: "customerChoice",
             message: "Please let us know the ID number of the item you're interested.",
             choices: products
@@ -72,32 +72,24 @@ function placeOrder(){
             message: "How many units would you like to buy?"
                 //RUN ANOTHER QUERY AND DO A DROPDOWN MENU ON TYPE
         }]).then(answers => {
-    console.log(answers);
-        // if(answers.customerUnits ){}
+            let IdInd = answers.customerChoice.split(":")[0];
+
+            dbItems.forEach((element, index) => {
+                if(element.item_id == IdInd){
+                    console.log("Got this far");
+                } 
+            });
+
+            var quantityOfChosenItem = dbItems.stock_quantity;
+            if(quantityOfChosenItem >= answers.customerUnits){
+                console.log("Item in stock");
+            }
+
 
 })};
 
 
 
-
-
-//-------------------------------------
-// ifs
-
-// function checkCustomerOrder(customerChoice){
-//     if(answers.customerChoice <= res.length){
-//         console.log("it worked");
-//     }
-
-//     else //if (answers.customerChoice > res.length) 
-//     {
-//         console.log("We do not have this product in stock");
-//     }
-// }
-
-
-
-//
 
 
 
