@@ -29,27 +29,34 @@ function displayProducts(){
 })
 }
 
+// ONE WAY TO USE ON INQUIRER
+
+// arrayID = [];
+
+// connection.query("SELECT item_id FROM products", function(err,res){
+//     if (err) throw err
+//     for (var x=0; x < res.length; x++){
+//         console.log(res[x].item_id);
+//         arrayID.push(res[x].item_id);
+//     }
+// })
+// console.log(arrayID);    
+
+
+// ANOTHER WAY TO USE ON INQUIRER - MAP
+
+connection.query('SELECT * FROM products', function(error, results, fields){
+    products = results.map(element => {
+        return (element.item_id + ": " + element.product_name + ": " + element.price);
+    })
+    console.log(products);
+})
+
+
+
+
 //--------------------------------
 //Place an Order
-
-arrayID = [];
-
-// var ids = function queryIds(){
-    connection.query("SELECT item_id FROM products", function(err,res){
-        if (err) throw err
-        for (var x=0; x < res.length; x++){
-            console.log(res[x].item_id);
-            arrayID.push(res[x].item_id);
-        }
-    })
-    // }
-    
-    console.log(arrayID);    
-
-
-// console.log("var ids: " + ids);
-// console.log("arrayID: " + arrayID);
-
 
 function placeOrder(){
 
@@ -57,7 +64,7 @@ function placeOrder(){
             type: "checkbox",
             name: "customerChoice",
             message: "Please let us know the ID number of the item you're interested.",
-            choices: arrayID
+            choices: products
         },
         { 
             type: "input",
@@ -66,6 +73,8 @@ function placeOrder(){
                 //RUN ANOTHER QUERY AND DO A DROPDOWN MENU ON TYPE
         }]).then(answers => {
     console.log(answers);
+        // if(answers.customerUnits ){}
+
 })};
 
 
