@@ -57,6 +57,10 @@ connection.query('SELECT * FROM products', function(error, results, fields){
 
 //--------------------------------
 //Place an Order
+let remainderstock;
+let selectedId;
+let selectedIdJs;
+
 
 function placeOrder(dbItems){
         inquirer.prompt([{
@@ -71,12 +75,12 @@ function placeOrder(dbItems){
             message: "How many units would you like to buy?"
         }]).then(answers => {
             let IdInd = answers.customerChoice.split(":")[0];
-            let selectedId;
 
            dbItems.forEach((element, index) => {
                 if(element.item_id == IdInd){
-                    selectedId = element.item_id 
-                    // console.log("selectedId: " + selectedId);
+                    selectedIdJs = element.item_id;
+                    selectedId = element.item_id - 1;
+                    console.log("selectedId: " + selectedId);
                 } 
             });
 
@@ -85,16 +89,18 @@ function placeOrder(dbItems){
                 
             // console.log(results[selectedId]);
             let customerVolume = parseInt(answers.customerUnits);
-            console.log(customerVolume);
+            console.log("customerVolume: " + customerVolume);
             let storeVolume = parseInt(results[selectedId].stock_quantity);
-            console.log("storeVolume: " + storeVolume);
-            let remainderstock = storeVolume - customerVolume;
+
+
+            console.log("storeVolume: " + results[selectedId].stock_quantity);
+            remainderstock = storeVolume - customerVolume;
             console.log("Remainder: " + remainderstock);
 
             if(customerVolume <= storeVolume){
                 console.log("We have your product in stock!"); 
                 if(remainderstock > 0){
-                    console.log("Update DB");
+                    updateDbStock();
                 }
             }
             else { 
@@ -104,6 +110,16 @@ function placeOrder(dbItems){
 })};
 
 
+//---------------------------------------------------------
+//UPDATE THE DATABASE
+
+function updateDbStock(){
+    connection.query('UPDATE products SET stock_quantity=? WHERE item_id = ?',
+    [remainderstock, selectedIdJs], function(err,res){
+        if(err) throw err;
+
+        console.log("DB updated! Remainerstock: " + remainderstock);})
+}
 
 
 
