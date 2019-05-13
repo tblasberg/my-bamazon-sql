@@ -59,7 +59,6 @@ connection.query('SELECT * FROM products', function(error, results, fields){
 //Place an Order
 
 function placeOrder(dbItems){
-
         inquirer.prompt([{
             type: "list",
             name: "customerChoice",
@@ -70,21 +69,39 @@ function placeOrder(dbItems){
             type: "input",
             name: "customerUnits",
             message: "How many units would you like to buy?"
-                //RUN ANOTHER QUERY AND DO A DROPDOWN MENU ON TYPE
         }]).then(answers => {
             let IdInd = answers.customerChoice.split(":")[0];
+            let selectedId;
 
-            dbItems.forEach((element, index) => {
+           dbItems.forEach((element, index) => {
                 if(element.item_id == IdInd){
-                    console.log("Got this far");
+                    selectedId = element.item_id 
+                    // console.log("selectedId: " + selectedId);
                 } 
             });
 
-            var quantityOfChosenItem = dbItems.stock_quantity;
-            if(quantityOfChosenItem >= answers.customerUnits){
-                console.log("Item in stock");
+            connection.query('SELECT stock_quantity FROM products', function(error, results, fields){
+                if(error) throw error;
+                
+            console.log(results[selectedId]);
+            let customerVolume = parseInt(answers.customerUnits);
+            let storeVolume = parseInt(results[selectedId]);
+            
+            if(customerVolume <= storeVolume){
+                console.log("We have your product in stock!");
             }
+            else { 
+                console.log("I'm sorry, you're buying too many units");
+            }
+            })
 
+
+
+
+            // var quantityOfChosenItem = dbItems.stock_quantity;
+            // if(quantityOfChosenItem >= answers.customerUnits){
+            //     console.log("Item in stock");
+            // }
 
 })};
 
@@ -100,5 +117,5 @@ function placeOrder(dbItems){
 displayProducts();
 // checkCustomerOrder();
 
-connection.end();
+// connection.end();
 
