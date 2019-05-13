@@ -83,26 +83,24 @@ function placeOrder(dbItems){
             connection.query('SELECT stock_quantity FROM products', function(error, results, fields){
                 if(error) throw error;
                 
-            console.log(results[selectedId]);
+            // console.log(results[selectedId]);
             let customerVolume = parseInt(answers.customerUnits);
-            let storeVolume = parseInt(results[selectedId]);
-            
+            console.log(customerVolume);
+            let storeVolume = parseInt(results[selectedId].stock_quantity);
+            console.log("storeVolume: " + storeVolume);
+            let remainderstock = storeVolume - customerVolume;
+            console.log("Remainder: " + remainderstock);
+
             if(customerVolume <= storeVolume){
-                console.log("We have your product in stock!");
+                console.log("We have your product in stock!"); 
+                if(remainderstock > 0){
+                    console.log("Update DB");
+                }
             }
             else { 
-                console.log("I'm sorry, you're buying too many units");
+                console.log("I'm sorry, we do not have enough items.");
             }
             })
-
-
-
-
-            // var quantityOfChosenItem = dbItems.stock_quantity;
-            // if(quantityOfChosenItem >= answers.customerUnits){
-            //     console.log("Item in stock");
-            // }
-
 })};
 
 
