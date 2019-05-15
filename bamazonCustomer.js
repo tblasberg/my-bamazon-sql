@@ -20,7 +20,7 @@ connection.connect(function(err) {
 function displayProducts(){
     connection.query("SELECT * FROM products", function(err,res){
         if (err) throw err;
-        console.log(res.item_id);
+        // console.log(res.item_id);
         for (var i = 0; i < res.length; i++){
             console.log("Id: " + res[i].item_id +  " | " + "Product: " + res[i].product_name + "   |   " + "Price: $" + res[i].price);
             console.log("-----------------------------------------------------------------------------");
@@ -49,7 +49,7 @@ connection.query('SELECT * FROM products', function(error, results, fields){
     products = results.map(element => {
         return (element.item_id + ": " + element.product_name + ": " + element.price);
     })
-    console.log(products);
+    // console.log(products);
 })
 
 
@@ -60,7 +60,12 @@ connection.query('SELECT * FROM products', function(error, results, fields){
 let remainderstock;
 let selectedId;
 let selectedIdJs;
+let customerVolume = 0;
+let storeVolume;
+let finalCost;
+let priceUnit;
 
+console.log("customer volume - global: " + customerVolume);
 
 function placeOrder(dbItems){
         inquirer.prompt([{
@@ -80,7 +85,7 @@ function placeOrder(dbItems){
                 if(element.item_id == IdInd){
                     selectedIdJs = element.item_id;
                     selectedId = element.item_id - 1;
-                    console.log("selectedId: " + selectedId);
+                    // console.log("selectedId: " + selectedId);
                 } 
             });
 
@@ -88,20 +93,26 @@ function placeOrder(dbItems){
                 if(error) throw error;
                 
             // console.log(results[selectedId]);
-            let customerVolume = parseInt(answers.customerUnits);
+            customerVolume = parseInt(answers.customerUnits);
             console.log("customerVolume: " + customerVolume);
-            let storeVolume = parseInt(results[selectedId].stock_quantity);
+            storeVolume = parseInt(results[selectedId].stock_quantity);
 
 
-            console.log("storeVolume: " + results[selectedId].stock_quantity);
+            // console.log("storeVolume: " + results[selectedId].stock_quantity);
             remainderstock = storeVolume - customerVolume;
-            console.log("Remainder: " + remainderstock);
+            // console.log("Remainder: " + remainderstock);
 
             if(customerVolume <= storeVolume){
                 console.log("We have your product in stock!"); 
-                if(remainderstock > 0){
-                    updateDbStock();
-                }
+                updateDbStock();
+                totalCost();
+                console.log("customer volume on if: " + answers.customerUnits);
+
+                finalCost = priceUnit * customerVolume;
+                console.log("Price Unit: " + priceUnit);
+                console.log("Your final cost is: $" + finalCost);
+            
+
             }
             else { 
                 console.log("I'm sorry, we do not have enough items.");
@@ -122,6 +133,18 @@ function updateDbStock(){
 }
 
 
+//-----------------------------------------------------------
+
+function totalCost(customerVolume){
+    connection.query('SELECT price FROM products', function(error, results, fields){
+        if(error) throw error;
+
+        priceUnit = parseInt(results[selectedId].price);
+        console.log("priceUnit inside totalCost(): " + priceUnit);
+        return priceUnit;
+    
+    })}
+
 
 
 
@@ -129,7 +152,7 @@ function updateDbStock(){
 
 
 displayProducts();
-// checkCustomerOrder();
+
 
 // connection.end();
 
